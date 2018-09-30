@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     StyleSheet,
+    ScrollView,
 } from 'react-native';
 import { Container, Content, Text } from 'native-base';
 import * as Colors from '../themes/colors';
@@ -41,9 +42,11 @@ class HomeScreen extends Component {
         return (
             <Container style={styles.container}>
                 <OfflineNotice />
-                <Content>
-                    <Text>namaskaaaaaaaaaram!!</Text>
-                </Content>
+                <ScrollView style={styles.scroll}>
+                    <Content>
+                        <Text>namaskaaaaaaaaaram!!</Text>
+                    </Content>
+                </ScrollView>
                 <FooterComponent
                     navigation={this.props.navigation}
                     selected={this.state.selectedItem} />
@@ -58,6 +61,9 @@ const styles = StyleSheet.create({
         textAlign: "center",
         alignItems: "center"
     },
+    scroll: {
+        backgroundColor: Colors.white,
+    }
 });
 
 HomeScreen.navigationOptions = ({ navigation }) => getNavigationOptionsWithAction('home', Colors.primary, 'white', null, <UserAccountSelector />);

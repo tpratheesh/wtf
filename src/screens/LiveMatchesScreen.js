@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     StyleSheet,
+    ScrollView,
 } from 'react-native';
 import * as Colors from '../themes/colors';
 import OfflineNotice from '../components/common/OfflineNotice';
@@ -44,25 +45,27 @@ class LiveMatchesScreen extends Component {
         return (
             <Container>
                 <OfflineNotice />
-                <Content>
-                    <List dataArray={this.state.matches}
-                        renderRow={(match) =>
-                            <ListItem onPress={() => {
-                                console.log(match.match)
-                                this.props.navigation.navigate('LiveScoreScreen', { match: match.match })
-                            }}>
-                                <Body>
-                                    <Text>
-                                        <Text style={styles.team1}>{match.team0}</Text>
-                                        <Text style={styles.small}> vs </Text>
-                                        <Text style={styles.team2}>{match.team1}</Text>
-                                    </Text>
-                                    <Text style={styles.match}>{match.match}</Text>
-                                </Body>
-                            </ListItem>
-                        }>
-                    </List>
-                </Content>
+                <ScrollView style={styles.scroll}>
+                    <Content>
+                        <List dataArray={this.state.matches}
+                            renderRow={(match) =>
+                                <ListItem onPress={() => {
+                                    console.log(match.match)
+                                    this.props.navigation.navigate('LiveScoreScreen', { match: match.match })
+                                }}>
+                                    <Body>
+                                        <Text>
+                                            <Text style={styles.team1}>{match.team0}</Text>
+                                            <Text style={styles.small}> vs </Text>
+                                            <Text style={styles.team2}>{match.team1}</Text>
+                                        </Text>
+                                        <Text style={styles.match}>{match.match}</Text>
+                                    </Body>
+                                </ListItem>
+                            }>
+                        </List>
+                    </Content>
+                </ScrollView>
                 <FooterComponent navigation={this.props.navigation} selected='live' />
             </Container >
         );
@@ -88,6 +91,9 @@ const styles = StyleSheet.create({
         fontSize: 8,
         paddingRight: 25,
         paddingLeft: 25
+    },
+    scroll: {
+        backgroundColor: Colors.white,
     }
 });
 

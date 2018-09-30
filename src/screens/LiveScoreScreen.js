@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import {
     StyleSheet,
+    ScrollView,
 } from 'react-native';
 import * as Colors from '../themes/colors';
 import OfflineNotice from '../components/common/OfflineNotice';
@@ -47,12 +48,14 @@ class LiveScoreScreen extends Component {
         return (
             <Container style={styles.container}>
                 <OfflineNotice />
-                <Content>
-                    <Text>{this.state.score.team0}</Text>
-                    <Text>{this.state.score.score0}</Text>
-                    <Text>{this.state.score.team1}</Text>
-                    <Text>{this.state.score.score1}</Text>
-                </Content>
+                <ScrollView style={styles.scroll}>
+                    <Content>
+                        <Text>{this.state.score.team0}</Text>
+                        <Text>{this.state.score.score0}</Text>
+                        <Text>{this.state.score.team1}</Text>
+                        <Text>{this.state.score.score1}</Text>
+                    </Content>
+                </ScrollView>
                 <FooterComponent navigation={this.props.navigation} selected='more' />
             </Container >
         );
@@ -65,6 +68,9 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
+    scroll: {
+        backgroundColor: Colors.white,
+    }
 });
 
 LiveScoreScreen.navigationOptions = ({ navigation }) => getNavigationOptions('match', Colors.primary, 'white');
