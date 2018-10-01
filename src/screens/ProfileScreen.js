@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import * as Colors from '../themes/colors';
 import OfflineNotice from '../components/common/OfflineNotice';
 import { connect } from 'react-redux';
-import { Container, Content } from 'native-base';
+import { Container, Header, Content, List, ListItem, Left, Body, Right, Thumbnail, Text } from 'native-base';
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import {
@@ -11,13 +11,14 @@ import {
     Platform,
     ScrollView,
     StyleSheet,
-    Text,
     View,
 } from 'react-native'
 
 class ProfileScreen extends Component {
     constructor(props) {
         super(props)
+
+        this.getUserAccounts = this.getUserAccounts.bind(this)
     }
 
     componentDidMount() {
@@ -29,14 +30,25 @@ class ProfileScreen extends Component {
                 <View style={styles.userRow}>
                     <Image
                         style={styles.userImage}
-                        source={require('../../assets/1.jpg')}
+                        source={require('../../assets/wtf.png')}
                     />
                     <View style={styles.userNameRow}>
                         <Text style={styles.userNameText}>{this.props.user.name || 'your name here'}</Text>
                     </View>
+                    <View style={styles.userBioRow}>
+                        <Text style={styles.userBioText}>{this.props.user.description || 'your bio here'}</Text>
+                    </View>
                 </View>
             </View>
         )
+    }
+
+    getUserAccounts() {
+        var accounts = [];
+        this.props.userAccounts.forEach((value, index) => {
+            accounts.push(<Text key={index}>{value.name}</Text>);
+        })
+        return accounts
     }
 
     render() {
@@ -45,6 +57,20 @@ class ProfileScreen extends Component {
                 <OfflineNotice />
                 <ScrollView style={styles.scroll}>
                     {this.renderContactHeader()}
+                    <List dataArray={this.props.userAccounts}
+                        renderRow={(account) =>
+                            <ListItem avatar>
+                                <Left>
+                                    <Thumbnail style={styles.userAccountImage} source={require('../../assets/wtf.png')} />
+                                </Left>
+                                <Body>
+                                    <Text>{account.name}</Text>
+                                    <Text note>{account.description}</Text>
+                                    <Text note>Fame 1234 Top Rank 1</Text>
+                                </Body>
+                            </ListItem>
+                        }>
+                    </List>
                 </ScrollView>
                 <FooterComponent navigation={this.props.navigation} selected='me' />
             </Container >
@@ -56,6 +82,8 @@ ProfileScreen.navigationOptions = ({ navigation }) => getNavigationOptions('me',
 
 const mapStateToProps = store => ({
     user: store.userReducer.user,
+    userAccounts: store.userReducer.userAccounts,
+    userSettings: store.userReducer.userSetting,
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -126,6 +154,11 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         width: 100,
     },
+    userAccountImage: {
+        borderRadius: 25,
+        height: 50,
+        width: 50,
+    },
     userNameRow: {
         marginBottom: 10,
     },
@@ -140,5 +173,5 @@ const styles = StyleSheet.create({
         flexDirection: 'column',
         justifyContent: 'center',
         marginBottom: 12,
-    },
+    }
 })

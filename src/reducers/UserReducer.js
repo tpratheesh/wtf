@@ -1,7 +1,7 @@
 import jwt from 'jwt-decode'
 import Action from '../constants/ActionConstants'
 
-const initialState = { user: {}, token: undefined, userAccounts: [], userSetting: { selectedUserAccount: 'default', selectedTheme: 'default' } }
+const initialState = { user: {}, token: undefined, userAccounts: [], userSetting: { selectedUserAccount: '', selectedTheme: 'default' } }
 
 export default function userReducer(state = initialState, action) {
     switch (action.type) {

@@ -19,13 +19,12 @@ class UserAccountSelector extends Component {
             selectedUserAccount: this.props.selectedUserAccount
         }
 
-        this.getUserAccounts = this.getUserAccounts.bind(this)
+        this.getUserAccounts = this.getUserAccounts.bind(this);
     }
 
     componentDidMount() {
         UserAccountsService.getUserSettings()
             .then((response) => {
-                console.log(response.data)
                 this.setState({
                     selectedUserAccount: response.data.selectedUserAccount
                 })
@@ -36,9 +35,6 @@ class UserAccountSelector extends Component {
     }
 
     onValueChange(value) {
-        this.setState({
-            selectedUserAccount: value
-        })
         UserAccountsService.updateSelectedUserAccount(value)
             .then((response) => {
                 this.props.dispatchUpdateUserSettings(response.data)
@@ -62,7 +58,7 @@ class UserAccountSelector extends Component {
                 mode="dropdown"
                 iosHeader="select your account"
                 iosIcon={<Icon name="caret-down" color={Colors.border} />}
-                selectedValue={this.state.selectedUserAccount || ''}
+                selectedValue={this.props.userSettings.selectedUserAccount || ''}
                 onValueChange={this.onValueChange.bind(this)}
             >
                 {this.getUserAccounts()}
