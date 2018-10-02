@@ -12,16 +12,11 @@ import * as ErrorUtils from '../utils/ErrorUtils';
 import { getNavigationOptionsWithAction } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import * as UserAccountsService from '../services/UserAccountsService';
-
 import UserAccountSelector from '../components/common/UserAccountSelector';
 
 class HomeScreen extends Component {
     constructor(props) {
         super(props)
-
-        this.state = {
-            selectedItem: 'home'
-        }
     }
 
     componentDidMount() {
@@ -31,11 +26,6 @@ class HomeScreen extends Component {
             }).catch(err => {
                 ErrorUtils.handleError(err);
             });
-    }
-
-    logout() {
-        this.props.dispatchUpdateUserToken(undefined)
-        console.log('logout');
     }
 
     render() {
@@ -49,7 +39,7 @@ class HomeScreen extends Component {
                 </ScrollView>
                 <FooterComponent
                     navigation={this.props.navigation}
-                    selected={this.state.selectedItem} />
+                    selected='home' />
             </Container >
         );
     }

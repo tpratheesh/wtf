@@ -15,7 +15,7 @@ import {
 } from 'react-native';
 import AccountStats from '../components/AccountStats';
 
-class ProfileScreen extends Component {
+class AccountScreen extends Component {
     constructor(props) {
         super(props)
     }
@@ -24,6 +24,9 @@ class ProfileScreen extends Component {
     }
 
     render() {
+        const { navigation } = this.props;
+        const account = navigation.getParam('account', undefined);
+
         let displayImage = null;
         displayImage = (
             <Image style={styles.userImage} source={require('../../assets/wtf.png')} />);
@@ -36,41 +39,22 @@ class ProfileScreen extends Component {
                         <View style={styles.userRow}>
                             {displayImage}
                             <View style={styles.userNameRow}>
-                                <Text style={styles.userNameText}>{this.props.user.name || 'your name here'}</Text>
+                                <Text style={styles.userNameText}>{account.name || 'your account name here'}</Text>
                             </View>
                             <View style={styles.userBioRow}>
-                                <Text style={styles.userBioText}>{this.props.user.description || 'your bio here'}</Text>
+                                <Text style={styles.userBioText}>{account.description || 'your account description here'}</Text>
                             </View>
                         </View>
                     </View>
-                    {this.props.userAccounts.length > 1 ?
-                        <List dataArray={this.props.userAccounts}
-                            renderRow={(account) =>
-                                <ListItem avatar onPress={() => {
-                                    this.props.navigation.navigate('AccountScreen', { account: account })
-                                }}>
-                                    <Left>
-                                        <Thumbnail style={styles.userAccountImage} source={require('../../assets/wtf.png')} />
-                                    </Left>
-                                    <Body>
-                                        <Text>{account.name}</Text>
-                                        <Text note>{account.description}</Text>
-                                        <Text note>Fame 1234 Top Rank 1</Text>
-                                    </Body>
-                                </ListItem>
-                            }>
-                        </List>
-                        :
-                        <AccountStats />
-                    }
+                    <AccountStats />
                 </ScrollView>
-                <FooterComponent navigation={this.props.navigation} selected='me' />
+                <FooterComponent navigation={this.props.navigation} selected='stats' />
             </Container >
         );
     }
 }
 
-ProfileScreen.navigationOptions = ({ navigation }) => getNavigationOptions('me', Colors.primary, 'white');
+AccountScreen.navigationOptions = ({ navigation }) => getNavigationOptions('stats', Colors.primary, 'white');
 
 const mapStateToProps = store => ({
     user: store.userReducer.user,
@@ -81,7 +65,7 @@ const mapStateToProps = store => ({
 const mapDispatchToProps = dispatch => ({
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(ProfileScreen);
+export default connect(mapStateToProps, mapDispatchToProps)(AccountScreen);
 
 const styles = StyleSheet.create({
     cardContainer: {

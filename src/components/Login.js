@@ -29,6 +29,7 @@ class LoginScreen extends Component {
     super(props)
 
     this.state = {
+      //mobileNo: '+919656218555',
       mobileNo: '+919073339660',
       otp: '714125'
     }

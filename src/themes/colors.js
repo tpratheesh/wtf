@@ -7,3 +7,5 @@ export const white = "#FFFFFF";
 export const team1 = "red";
 export const team2 = "blue";
 export const match = "green";
+
+export const danger = "red";

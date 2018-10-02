@@ -10,7 +10,6 @@ import { Container, Content, List, ListItem, Body, Left, Right, Thumbnail, View,
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import openSocket from 'socket.io-client';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 class LiveMatchesScreen extends Component {
     constructor(props) {

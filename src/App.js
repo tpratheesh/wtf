@@ -6,6 +6,9 @@ import HomeScreen from './screens/HomeScreen';
 import LiveMatchesScreen from './screens/LiveMatchesScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import LiveScoreScreen from './screens/LiveScoreScreen';
+import AccountScreen from './screens/AccountScreen';
+import FixturesScreen from './screens/FixturesScreen';
+import MoreMenuScreen from './screens/MoreMenuScreen';
 import * as Colors from './themes/colors';
 
 const stackNavigator = token => createStackNavigator({
@@ -14,6 +17,9 @@ const stackNavigator = token => createStackNavigator({
   LiveMatchesScreen: { screen: LiveMatchesScreen },
   ProfileScreen: { screen: ProfileScreen },
   LiveScoreScreen: { screen: LiveScoreScreen },
+  AccountScreen: { screen: AccountScreen },
+  FixturesScreen: { screen: FixturesScreen },
+  MoreMenuScreen: { screen: MoreMenuScreen }
 }, {
     initialRouteName: token == undefined ? 'LoginScreen' : 'HomeScreen',
     navigationOptions: () => ({
