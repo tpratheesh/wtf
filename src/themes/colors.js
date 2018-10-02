@@ -9,3 +9,4 @@ export const team2 = "blue";
 export const match = "green";
 
 export const danger = "red";
+export const refresh = "green";

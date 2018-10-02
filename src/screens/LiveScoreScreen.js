@@ -56,7 +56,7 @@ class LiveScoreScreen extends Component {
                         <Text>{this.state.score.score1}</Text>
                     </Content>
                 </ScrollView>
-                <FooterComponent navigation={this.props.navigation} selected='more' />
+                <FooterComponent navigation={this.props.navigation} selected='score' />
             </Container >
         );
     }

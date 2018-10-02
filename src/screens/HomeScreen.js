@@ -13,30 +13,43 @@ import { getNavigationOptionsWithAction } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import * as UserAccountsService from '../services/UserAccountsService';
 import UserAccountSelector from '../components/common/UserAccountSelector';
+import PTRView from 'react-native-pull-to-refresh';
 
 class HomeScreen extends Component {
     constructor(props) {
         super(props)
+
+        this._refresh = this._refresh.bind(this);
     }
 
     componentDidMount() {
-        UserAccountsService.getUserAccounts()
-            .then((response) => {
-                this.props.dispatchUpdateUserAccounts(response.data)
-            }).catch(err => {
-                ErrorUtils.handleError(err);
-            });
+        this._refresh();
+    }
+
+    _refresh() {
+        return new Promise((resolve) => {
+            if (this.props.userAccounts == undefined || this.props.userAccounts.length == 0) {
+                UserAccountsService.getUserAccounts()
+                    .then((response) => {
+                        this.props.dispatchUpdateUserAccounts(response.data)
+                    }).catch(err => {
+                        ErrorUtils.handleError(err);
+                    });
+            }
+        });
     }
 
     render() {
         return (
             <Container style={styles.container}>
                 <OfflineNotice />
-                <ScrollView style={styles.scroll}>
-                    <Content>
-                        <Text>namaskaaaaaaaaaram!!</Text>
-                    </Content>
-                </ScrollView>
+                <PTRView colors={Colors.refresh} onRefresh={this._refresh}>
+                    <ScrollView style={styles.scroll}>
+                        <Content>
+                            <Text>namaskaaaaaaaaaram!!</Text>
+                        </Content>
+                    </ScrollView>
+                </PTRView>
                 <FooterComponent
                     navigation={this.props.navigation}
                     selected='home' />

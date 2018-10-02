@@ -6,21 +6,28 @@ import { Container, Button, Content, List, ListItem, Left, Body, Right, Thumbnai
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import {
-    Animated,
     Image,
-    Platform,
     ScrollView,
     StyleSheet,
     View,
 } from 'react-native';
 import AccountStats from '../components/AccountStats';
+import PTRView from 'react-native-pull-to-refresh';
 
 class ProfileScreen extends Component {
     constructor(props) {
         super(props)
+
+        this._refresh = this._refresh.bind(this);
     }
 
     componentDidMount() {
+    }
+
+    _refresh() {
+        return new Promise((resolve) => {
+            setTimeout(() => { resolve() }, 2000)
+        });
     }
 
     render() {
@@ -31,39 +38,41 @@ class ProfileScreen extends Component {
         return (
             <Container style={styles.container}>
                 <OfflineNotice />
-                <ScrollView style={styles.scroll}>
-                    <View style={styles.headerContainer}>
-                        <View style={styles.userRow}>
-                            {displayImage}
-                            <View style={styles.userNameRow}>
-                                <Text style={styles.userNameText}>{this.props.user.name || 'your name here'}</Text>
-                            </View>
-                            <View style={styles.userBioRow}>
-                                <Text style={styles.userBioText}>{this.props.user.description || 'your bio here'}</Text>
+                <PTRView colors={Colors.refresh} onRefresh={this._refresh}>
+                    <ScrollView style={styles.scroll}>
+                        <View style={styles.headerContainer}>
+                            <View style={styles.userRow}>
+                                {displayImage}
+                                <View style={styles.userNameRow}>
+                                    <Text style={styles.userNameText}>{this.props.user.name || 'your name here'}</Text>
+                                </View>
+                                <View style={styles.userBioRow}>
+                                    <Text style={styles.userBioText}>{this.props.user.description || 'your bio here'}</Text>
+                                </View>
                             </View>
                         </View>
-                    </View>
-                    {this.props.userAccounts.length > 1 ?
-                        <List dataArray={this.props.userAccounts}
-                            renderRow={(account) =>
-                                <ListItem avatar onPress={() => {
-                                    this.props.navigation.navigate('AccountScreen', { account: account })
-                                }}>
-                                    <Left>
-                                        <Thumbnail style={styles.userAccountImage} source={require('../../assets/wtf.png')} />
-                                    </Left>
-                                    <Body>
-                                        <Text>{account.name}</Text>
-                                        <Text note>{account.description}</Text>
-                                        <Text note>Fame 1234 Top Rank 1</Text>
-                                    </Body>
-                                </ListItem>
-                            }>
-                        </List>
-                        :
-                        <AccountStats />
-                    }
-                </ScrollView>
+                        {this.props.userAccounts.length > 1 ?
+                            <List dataArray={this.props.userAccounts}
+                                renderRow={(account) =>
+                                    <ListItem avatar onPress={() => {
+                                        this.props.navigation.navigate('AccountScreen', { account: account })
+                                    }}>
+                                        <Left>
+                                            <Thumbnail style={styles.userAccountImage} source={require('../../assets/wtf.png')} />
+                                        </Left>
+                                        <Body>
+                                            <Text>{account.name}</Text>
+                                            <Text note>{account.description}</Text>
+                                            <Text note>Fame 1234 Top Rank 1</Text>
+                                        </Body>
+                                    </ListItem>
+                                }>
+                            </List>
+                            :
+                            <AccountStats />
+                        }
+                    </ScrollView>
+                </PTRView>
                 <FooterComponent navigation={this.props.navigation} selected='me' />
             </Container >
         );
