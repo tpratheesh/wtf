@@ -9,7 +9,9 @@ import LiveScoreScreen from './screens/LiveScoreScreen';
 import AccountScreen from './screens/AccountScreen';
 import FixturesScreen from './screens/FixturesScreen';
 import MoreMenuScreen from './screens/MoreMenuScreen';
+import ErrorScreen from './screens/ErrorScreen';
 import * as Colors from './themes/colors';
+import ErrorHandler from './error/handler/ErrorHandler';
 
 const stackNavigator = token => createStackNavigator({
   LoginScreen: { screen: LoginScreen, },
@@ -19,7 +21,9 @@ const stackNavigator = token => createStackNavigator({
   LiveScoreScreen: { screen: LiveScoreScreen },
   AccountScreen: { screen: AccountScreen },
   FixturesScreen: { screen: FixturesScreen },
-  MoreMenuScreen: { screen: MoreMenuScreen }
+  MoreMenuScreen: { screen: MoreMenuScreen },
+  ErrorScreen: { screen: ErrorScreen },
+  ErrorHandler: { screen: ErrorHandler }
 }, {
     initialRouteName: token == undefined ? 'LoginScreen' : 'HomeScreen',
     navigationOptions: () => ({
@@ -38,7 +42,9 @@ class App extends Component {
     const { token } = this.props;
     const Navigator = stackNavigator(token);
     return (
-      <Navigator />
+      <ErrorHandler>
+        <Navigator />
+      </ErrorHandler>
     );
   }
 }

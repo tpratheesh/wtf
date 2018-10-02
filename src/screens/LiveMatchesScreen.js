@@ -41,6 +41,7 @@ class LiveMatchesScreen extends Component {
     }
 
     render() {
+        throw new Error('You cannot enter more than five characters!');
         return (
             <Container>
                 <OfflineNotice />
@@ -74,17 +75,17 @@ class LiveMatchesScreen extends Component {
 const styles = StyleSheet.create({
     team1: {
         color: Colors.team1,
-        fontSize: 18,
+        fontSize: 12,
         fontWeight: 'bold',
     },
     team2: {
         color: Colors.team2,
-        fontSize: 18,
+        fontSize: 12,
         fontWeight: 'bold',
     },
     match: {
         color: Colors.match,
-        fontSize: 10,
+        fontSize: 8,
     },
     small: {
         fontSize: 8,
