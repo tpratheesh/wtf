@@ -38,6 +38,11 @@ const stackNavigator = token => createStackNavigator({
   });
 
 class App extends Component {
+
+  constructor(props) {
+    super(props)
+  }
+
   render() {
     const { token } = this.props;
     const Navigator = stackNavigator(token);
@@ -50,8 +55,10 @@ class App extends Component {
 }
 
 const mapStateToProps = store => ({
-  currentUser: store.userReducer.user,
   token: store.userReducer.token,
 });
 
-export default connect(mapStateToProps)(App);
+const mapDispatchToProps = dispatch => ({
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(App);

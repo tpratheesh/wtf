@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import { Container, Content, List, ListItem, Body, Left, Right, Thumbnail, View, Text } from 'native-base';
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
+import { updateliveMatches } from '../actions/LiveMatchesAction';
 import openSocket from 'socket.io-client';
 
 class LiveMatchesScreen extends Component {
@@ -16,32 +17,38 @@ class LiveMatchesScreen extends Component {
         super(props)
 
         this.state = {
-            matches: []
+            matches: this.props.liveMatches
         }
-
-        const socket = openSocket('http://localhost:5000');
-        socket.on('connect', () => {
-            console.log('connected');
-        })
-        socket.on('disconnect', () => {
-            console.log('disconnected');
-            socket.close();
-        })
-        socket.on('error', (e) => {
-            console.log('error', e);
-            socket.close();
-        })
-        socket.on('matches', (matches) => {
-            this.setState({ matches: matches });
-        })
     }
 
-    componentDidMount() {
+    componentWillMount() {
+        this.socket = openSocket('https://wtfappscore.herokuapp.com');
 
+        this.socket.on('connect', () => {
+            console.log('connected');
+        });
+
+        this.socket.on('disconnect', () => {
+            console.log('disconnected');
+        });
+
+        this.socket.on('error', (e) => {
+            console.log('error', e);
+            if (this.socket)
+                this.socket.close();
+        });
+
+        this.socket.on('matches', (matches) => {
+            this.props.dispatchUpdateliveMatches(matches);
+        });
+    }
+
+    componentWillUnmount() {
+        if (this.socket)
+            this.socket.close();
     }
 
     render() {
-        throw new Error('You cannot enter more than five characters!');
         return (
             <Container>
                 <OfflineNotice />
@@ -50,7 +57,8 @@ class LiveMatchesScreen extends Component {
                         <List dataArray={this.state.matches}
                             renderRow={(match) =>
                                 <ListItem onPress={() => {
-                                    console.log(match.match)
+                                    if (this.socket)
+                                        this.socket.close();
                                     this.props.navigation.navigate('LiveScoreScreen', { match: match.match })
                                 }}>
                                     <Body>
@@ -103,11 +111,11 @@ LiveMatchesScreen.navigationOptions = ({ navigation }) => getNavigationOptions('
 
 const mapStateToProps = store => ({
     liveMatches: store.liveMatchesReducer.liveMatches,
-    token: store.userReducer.token
+    token: store.userReducer.token,
 })
 
 const mapDispatchToProps = dispatch => ({
-    dispatchUpdateImportantNos: (importantNos) => dispatch(updateLiveMatchess(importantNos)),
+    dispatchUpdateliveMatches: (matches) => dispatch(updateliveMatches(matches)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LiveMatchesScreen);

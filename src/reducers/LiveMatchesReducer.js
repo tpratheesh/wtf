@@ -1,6 +1,6 @@
 import Action from '../constants/ActionConstants'
 
-const initialState = { importantNos: [] }
+const initialState = { liveMatches: [] }
 
 export default function liveMatchesReducer(state = initialState, action) {
     switch (action.type) {

@@ -9,56 +9,69 @@ import { connect } from 'react-redux';
 import { Container, Content, Text } from 'native-base';
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
+import { updateliveMatches } from '../actions/LiveMatchesAction';
 import openSocket from 'socket.io-client';
 
 class LiveScoreScreen extends Component {
     constructor(props) {
         super(props)
-
-        this.state = {
-            score: {}
-        }
-
-        this.socket = openSocket('ws://localhost:5000');
-        this.socket.on('connect', () => {
-            console.log('connected');
-        })
-        this.socket.on('disconnect', () => {
-            console.log('disconnected');
-            socket.close();
-        })
-        this.socket.on('error', (e) => {
-            console.log('error', e);
-            socket.close();
-        })
     }
 
-    componentDidMount() {
+    componentWillMount() {
+        this.socket = openSocket('https://wtfappscore.herokuapp.com');
 
+        this.socket.on('connect', () => {
+            console.log('connected');
+        });
+
+        this.socket.on('disconnect', () => {
+            console.log('disconnected');
+        });
+
+        this.socket.on('error', (e) => {
+            console.log('error', e);
+            if (this.socket)
+                this.socket.close();
+        });
+
+        this.socket.on('matches', (matches) => {
+            console.log('score page, updating')
+            this.props.dispatchUpdateliveMatches(matches);
+        });
+    }
+
+    componentWillUnmount() {
+        if (this.socket)
+            this.socket.close();
     }
 
     render() {
-        const { navigation } = this.props;
-        const match = navigation.getParam('match', undefined);
-        console.log('==', match)
-        this.socket.on(match, (score) => {
-            console.log('****', match)
-            this.setState({ score: score });
+        console.log(this.props)
+        let match = this.props.navigation.getParam('match', undefined)
+        let score = this.props.liveMatches.filter(function (scoreObj) {
+            return scoreObj.match == match;
         })
-        return (
-            <Container style={styles.container}>
-                <OfflineNotice />
-                <ScrollView style={styles.scroll}>
-                    <Content>
-                        <Text>{this.state.score.team0}</Text>
-                        <Text>{this.state.score.score0}</Text>
-                        <Text>{this.state.score.team1}</Text>
-                        <Text>{this.state.score.score1}</Text>
-                    </Content>
-                </ScrollView>
-                <FooterComponent navigation={this.props.navigation} selected='score' />
-            </Container >
-        );
+        score = score[0] || {}
+
+        if (match == undefined) {
+            return (<Text>oops! cool, u found that bug! wen u read this message, lemme know :D</Text>)
+        } else {
+            return (
+                <Container style={styles.container}>
+                    <OfflineNotice />
+                    <ScrollView style={styles.scroll}>
+                        <Content>
+                            <Text>{match}</Text>
+                            <Text>{score.team0}</Text>
+                            <Text>{score.score0}</Text>
+                            <Text>{score.team1}</Text>
+                            <Text>{score.score1}</Text>
+                        </Content>
+                    </ScrollView>
+                    <FooterComponent navigation={this.props.navigation} selected='score' />
+                </Container >
+            );
+        }
     }
 }
 
@@ -81,7 +94,7 @@ const mapStateToProps = store => ({
 })
 
 const mapDispatchToProps = dispatch => ({
-    dispatchUpdateImportantNos: (importantNos) => dispatch(updateLiveMatchess(importantNos)),
+    dispatchUpdateliveMatches: (matches) => dispatch(updateliveMatches(matches)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LiveScoreScreen);
