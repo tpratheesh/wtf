@@ -18,7 +18,7 @@ class LiveScoreScreen extends Component {
     }
 
     componentWillMount() {
-        this.socket = openSocket('https://wtfappscore.herokuapp.com');
+        this.socket = openSocket('https://wtfappscore.herokuapp.com', { transports: ['websocket'] });
 
         this.socket.on('connect', () => {
             console.log('connected');
