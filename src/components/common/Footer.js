@@ -35,14 +35,14 @@ class FooterButton extends Component {
             return (
                 <Button active style={styles.activeBtn} onPress={() => { this.props.navigation.navigate(this.props.screen) }}>
                     <Icon name={this.props.icon} size={20} color={Colors.primary} />
-                    <Text style={{ color: Colors.primary }}>{this.props.title}</Text>
+                    <Text uppercase={false} style={{ color: Colors.primary }}>{this.props.title}</Text>
                 </Button>
             )
         } else {
             return (
                 <Button onPress={() => { this.props.navigation.navigate(this.props.screen) }}>
                     <Icon name={this.props.icon} size={20} color={Colors.border} />
-                    <Text style={{ color: Colors.border }}>{this.props.title}</Text>
+                    <Text uppercase={false} style={{ color: Colors.border }}>{this.props.title}</Text>
                 </Button>
             )
         }
@@ -52,12 +52,19 @@ class FooterButton extends Component {
 const styles = StyleSheet.create({
     activeBtn: {
         backgroundColor: Colors.white,
+        borderColor: Colors.white,
         color: Colors.primary,
         transform: [{ scale: 1.5 }]
     },
     footerStyle: {
         backgroundColor: Colors.white,
-        borderColor: Colors.white
+        borderColor: Colors.white,
+        textTransform: "lowercase"
+    },
+    footerTab: {
+        backgroundColor: Colors.white,
+        borderColor: Colors.white,
+        textTransform: "lowercase"
     }
 });
 

@@ -36,7 +36,7 @@ class MoreMenuScreen extends Component {
                 </ScrollView>
                 <Button full transparent onPress={() => { this.logout() }}>
                     <Icon name='power-off' size={20} color={Colors.danger} />
-                    <Text style={{ color: Colors.danger }}> logout</Text>
+                    <Text uppercase={false} style={{ color: Colors.danger }}> logout</Text>
                 </Button>
                 <FooterComponent
                     navigation={this.props.navigation}
