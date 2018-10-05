@@ -1,6 +1,8 @@
 import {
     Toast
 } from 'native-base';
+import { toastMessage } from './ToastUtils';
+import ToastConstants from '../constants/ToastConstants';
 
 export function handleError(error) {
     //alert(error)
@@ -9,20 +11,10 @@ export function handleError(error) {
         const messages = error.response.data.messages
         if (Array.isArray(messages) && messages.length > 0) {
             messages.forEach((message) => {
-                Toast.show({
-                    text: message,
-                    type: "danger",
-                    buttonText: "Okay",
-                    duration: 3000
-                });
+                toastMessage(message, ToastConstants.DANGER);
             });
         } else {
-            Toast.show({
-                text: "Unknown error while processing your request",
-                type: "danger",
-                buttonText: "Okay",
-                duration: 3000
-            });
+            toastMessage("Unknown error while processing your request", ToastConstants.DANGER);
         }
     }
 }

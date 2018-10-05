@@ -30,8 +30,9 @@ class LiveScoreScreen extends Component {
 
         this.socket.on('error', (e) => {
             console.log('error', e);
-            if (this.socket)
+            if (this.socket.connected) {
                 this.socket.close();
+            }
         });
 
         this.socket.on('matches', (matches) => {
@@ -41,12 +42,12 @@ class LiveScoreScreen extends Component {
     }
 
     componentWillUnmount() {
-        if (this.socket)
+        if (this.socket.connected) {
             this.socket.close();
+        }
     }
 
     render() {
-        console.log(this.props)
         let match = this.props.navigation.getParam('match', undefined)
         let score = this.props.liveMatches.filter(function (scoreObj) {
             return scoreObj.match == match;

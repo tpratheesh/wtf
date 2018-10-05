@@ -7,21 +7,19 @@ import { getNavigationOptions } from '../utils/Navigation';
 import {
   Container,
   Content,
-  Text,
   Form,
   Item,
   Input,
   Label,
-  Body,
-  Footer,
   View,
-  Toast
 } from 'native-base';
 import * as LoginService from '../services/LoginService';
 import OfflineNotice from './common/OfflineNotice';
 import SmsListener from 'react-native-android-sms-listener';
 import AnimateLoadingButton from 'react-native-animate-loading-button';
 import * as ErrorUtils from '../utils/ErrorUtils';
+import { toastMessage } from '../utils/ToastUtils';
+import ToastConstants from '../constants/ToastConstants';
 
 class LoginScreen extends Component {
 
@@ -77,19 +75,9 @@ class LoginScreen extends Component {
     LoginService.generateOTP(mobileNo)
       .then((response) => {
         if (response.data.success) {
-          Toast.show({
-            text: "We have generated an OTP for login. Please wait for SMS.",
-            type: "success",
-            buttonText: "Okay",
-            duration: 3000
-          });
+          toastMessage("We have generated an OTP for login. Please wait for SMS.", ToastConstants.SUCCESS);
         } else {
-          Toast.show({
-            text: "Error while generating OTP. Please try again.",
-            type: "danger",
-            buttonText: "Okay",
-            duration: 3000
-          });
+          toastMessage("Error while generating OTP. Please try again.", ToastConstants.DANGER);
         }
         this.loadingButton.showLoading(false);
       }).catch((err) => {

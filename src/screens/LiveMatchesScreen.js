@@ -34,8 +34,9 @@ class LiveMatchesScreen extends Component {
 
         this.socket.on('error', (e) => {
             console.log('error', e);
-            if (this.socket)
+            if (this.socket.connected) {
                 this.socket.close();
+            }
         });
 
         this.socket.on('matches', (matches) => {
@@ -44,8 +45,9 @@ class LiveMatchesScreen extends Component {
     }
 
     componentWillUnmount() {
-        if (this.socket)
+        if (this.socket.connected) {
             this.socket.close();
+        }
     }
 
     render() {
