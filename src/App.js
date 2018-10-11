@@ -9,6 +9,7 @@ import LiveScoreScreen from './screens/LiveScoreScreen';
 import AccountScreen from './screens/AccountScreen';
 import FixturesScreen from './screens/FixturesScreen';
 import MoreMenuScreen from './screens/MoreMenuScreen';
+import TeamSelectScreen from './screens/TeamSelectScreen';
 import ErrorScreen from './screens/ErrorScreen';
 import * as Colors from './themes/colors';
 import ErrorHandler from './error/handler/ErrorHandler';
@@ -22,6 +23,7 @@ const stackNavigator = token => createStackNavigator({
   AccountScreen: { screen: AccountScreen },
   FixturesScreen: { screen: FixturesScreen },
   MoreMenuScreen: { screen: MoreMenuScreen },
+  TeamSelectScreen: { screen: TeamSelectScreen },
   ErrorScreen: { screen: ErrorScreen },
   ErrorHandler: { screen: ErrorHandler }
 }, {

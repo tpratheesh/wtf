@@ -21,7 +21,7 @@ class LiveMatchesScreen extends Component {
         }
     }
 
-    componentWillMount() {
+    componentDidMount() {
         this.socket = openSocket('https://wtfappscore.herokuapp.com', { transports: ['websocket'] });
 
         this.socket.on('connect', () => {
@@ -40,6 +40,7 @@ class LiveMatchesScreen extends Component {
         });
 
         this.socket.on('matches', (matches) => {
+            console.log('matches screen, updating')
             this.props.dispatchUpdateliveMatches(matches);
         });
     }
@@ -59,8 +60,6 @@ class LiveMatchesScreen extends Component {
                         <List dataArray={this.state.matches}
                             renderRow={(match) =>
                                 <ListItem onPress={() => {
-                                    if (this.socket)
-                                        this.socket.close();
                                     this.props.navigation.navigate('LiveScoreScreen', { match: match.match })
                                 }}>
                                     <Body>

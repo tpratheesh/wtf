@@ -10,41 +10,18 @@ import { Container, Content, Text } from 'native-base';
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import { updateliveMatches } from '../actions/LiveMatchesAction';
-import openSocket from 'socket.io-client';
 
 class LiveScoreScreen extends Component {
     constructor(props) {
         super(props)
     }
 
-    componentWillMount() {
-        this.socket = openSocket('https://wtfappscore.herokuapp.com', { transports: ['websocket'] });
+    componentDidMount() {
 
-        this.socket.on('connect', () => {
-            console.log('connected');
-        });
-
-        this.socket.on('disconnect', () => {
-            console.log('disconnected');
-        });
-
-        this.socket.on('error', (e) => {
-            console.log('error', e);
-            if (this.socket.connected) {
-                this.socket.close();
-            }
-        });
-
-        this.socket.on('matches', (matches) => {
-            console.log('score page, updating')
-            this.props.dispatchUpdateliveMatches(matches);
-        });
     }
 
     componentWillUnmount() {
-        if (this.socket.connected) {
-            this.socket.close();
-        }
+
     }
 
     render() {

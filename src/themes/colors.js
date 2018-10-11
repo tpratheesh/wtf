@@ -7,6 +7,7 @@ export const white = "#FFFFFF";
 export const team1 = "red";
 export const team2 = "blue";
 export const match = "green";
+export const series = "#A9A9A9";
 
 export const danger = "red";
 export const refresh = "green";

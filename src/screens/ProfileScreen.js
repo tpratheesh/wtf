@@ -6,17 +6,28 @@ import { Container, Button, Content, List, ListItem, Left, Body, Right, Thumbnai
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import {
-    Image,
-    ScrollView,
     StyleSheet,
     View,
-} from 'react-native';
+    ScrollView,
+    TouchableOpacity,
+    Image,
+} from "react-native";
 import AccountStats from '../components/AccountStats';
 import PTRView from 'react-native-pull-to-refresh';
+//import ImagePicker from "react-native-image-picker";
+import Icon from 'react-native-vector-icons/FontAwesome';
+import * as PermissionUtils from '../utils/PermissionUtils';
+import PermissionConstants from '../constants/PermissionConstants';
+import * as UserService from '../services/UserService';
+import * as ErrorUtils from '../utils/ErrorUtils';
 
 class ProfileScreen extends Component {
     constructor(props) {
         super(props)
+
+        this.state = {
+            photo: this.props.user.photo || undefined
+        }
 
         this._refresh = this._refresh.bind(this);
     }
@@ -30,11 +41,73 @@ class ProfileScreen extends Component {
         });
     }
 
+    selectPhotoTapped() {
+        PermissionUtils.requestPermissions(PermissionConstants.CAMERA);
+        const options = {
+            quality: 1.0,
+            maxWidth: 500,
+            maxHeight: 500,
+            storageOptions: {
+                skipBackup: true
+            },
+            allowsEditing: false,
+            fileSize: 1024
+        };
+
+        // ImagePicker.showImagePicker(options, response => {
+        //     if (response.didCancel) {
+        //         console.log("User cancelled photo picker");
+        //     } else if (response.error) {
+        //         console.log("ImagePicker Error: ", response.error);
+        //     } else if (response.customButton) {
+        //         console.log("User tapped custom button: ", response.customButton);
+        //     } else {
+                // CompressImage.createCompressedImage(response.uri, 'wtf').then((compressed) => {
+                //     console.log(compressed)
+                //     UserService.updateProfilePhoto({
+                //         photo: compressed
+                //     }).then((response) => {
+                //         console.log('back here');
+                //     }).catch(err => {
+                //         console.log(err)
+                //         ErrorUtils.handleError(err);
+                //     });
+                // }).catch((err) => {
+                //     console.log(err)
+                //     ErrorUtils.handleError(err);
+                // });
+            // }
+        // });
+    }
+
+    sub(displayImage) {
+        return (
+            <View style={{ flexDirection: "row" }}>
+                <View style={{ alignItems: "flex-end" }}>
+                    <TouchableOpacity onPress={this.selectPhotoTapped.bind(this)}>
+                        <View
+                            style={[
+                                styles.avatar,
+                                styles.avatarContainer
+                            ]}
+                        >
+                            {displayImage}
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </View>
+        );
+    }
+
     render() {
         let displayImage = null;
-        displayImage = (
-            <Image style={styles.userImage} source={require('../../assets/wtf.png')} />);
-
+        if (this.state.photo == undefined) {
+            displayImage = (
+                <Image style={styles.userImage} source={require('../../assets/wtf.png')} />);
+        } else {
+            displayImage = (
+                <Image style={styles.userImage} source={require('../../assets/wtf.png')} />);
+        }
         return (
             <Container style={styles.container}>
                 <OfflineNotice />
@@ -42,7 +115,7 @@ class ProfileScreen extends Component {
                     <ScrollView style={styles.scroll}>
                         <View style={styles.headerContainer}>
                             <View style={styles.userRow}>
-                                {displayImage}
+                                {this.sub(displayImage)}
                                 <View style={styles.userNameRow}>
                                     <Text style={styles.userNameText}>{this.props.user.name || 'your name here'}</Text>
                                 </View>
@@ -154,6 +227,7 @@ const styles = StyleSheet.create({
         height: 100,
         marginBottom: 10,
         width: 100,
+        borderRadius: .1,
     },
     userAccountImage: {
         borderRadius: 25,

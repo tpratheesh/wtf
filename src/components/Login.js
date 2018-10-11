@@ -61,6 +61,12 @@ class LoginScreen extends Component {
 
   login(mobileNo, otp) {
     this.loginLoadingButton.showLoading(true);
+    var re = new RegExp('^(\\+\\d{1,3}[- ]?)?\\d{10}$');
+    if (!re.test(mobileNo)) {
+      toastMessage("Please enter a valid mobile no", ToastConstants.DANGER);
+      this.loginLoadingButton.showLoading(false);
+      return false;
+    }
     LoginService.validateOTP(mobileNo, otp)
       .then((response) => {
         this.props.dispatchUpdateUserToken(response.data.token);
