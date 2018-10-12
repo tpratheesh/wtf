@@ -11,3 +11,5 @@ export const series = "#A9A9A9";
 
 export const danger = "red";
 export const refresh = "green";
+
+export const selected = "#98F687";
