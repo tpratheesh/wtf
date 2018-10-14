@@ -28,6 +28,7 @@ class UserAccountSelector extends Component {
                 this.setState({
                     selectedUserAccount: response.data.selectedUserAccount
                 })
+                console.log(response.data.selectedUserAccount)
                 this.props.dispatchUpdateUserSettings(response.data)
             }).catch(err => {
                 ErrorUtils.handleError(err);

@@ -3,20 +3,25 @@ import {
     StyleSheet,
     ScrollView,
     Image,
+    TouchableOpacity
 } from 'react-native';
 import * as Colors from '../themes/colors';
 import OfflineNotice from '../components/common/OfflineNotice';
 import { connect } from 'react-redux';
-import { Container, Content, Card, CardItem, Text, Body, View, Button, } from 'native-base';
+import { Container, Content, Card, CardItem, Text, Body, View, Button, Badge } from 'native-base';
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
-import { updateUserMatchTeam } from "../actions/UserMatchTeamAction";
+import { toastMessage } from '../utils/ToastUtils';
+import ToastConstants from '../constants/ToastConstants';
+import * as TeamSelectService from '../services/TeamSelectService';
+import * as ErrorUtils from '../utils/ErrorUtils';
+import moment from 'moment';
 
 class TeamSelectScreen extends Component {
     constructor(props) {
         super(props)
 
-        const match = this.props.navigation.getParam('match', undefined)
+        const match = this.props.navigation.getParam('match', undefined);
         let players = []
         if (this.props.userMatchTeams.filter(e => e.match == match._id)) {
             players = this.props.userMatchTeams.filter(e => e.match == match._id).players || []
@@ -25,10 +30,18 @@ class TeamSelectScreen extends Component {
             match: match,
             selectedPlayers: players,
             squad1Players: match.squad1.players,
-            squad2Players: match.squad2.players
+            squad2Players: match.squad2.players,
+            squad1Count: 0,
+            squad2Count: 0,
+            selectedPlayerId: this.props.userMatchTeams._id || '',
+            captainSquad: undefined,
+            viceCaptainSquad: undefined,
+            captain: this.props.userMatchTeams.captain || undefined,
+            viceCaptain: this.props.userMatchTeams.viceCaptain || undefined
         }
         this._renderContent = this._renderContent.bind(this);
         this._renderMatchHeader = this._renderMatchHeader.bind(this);
+        this._renderLiveScore = this._renderLiveScore.bind(this);
         this._renderTeamHeader = this._renderTeamHeader.bind(this);
         this.__renderPlayersSection = this._renderPlayersSection.bind(this);
         this._renderPlayers = this._renderPlayers.bind(this);
@@ -36,17 +49,84 @@ class TeamSelectScreen extends Component {
         this.onPlayerClick = this.onPlayerClick.bind(this);
         this.selectedPlayerStyle = this.selectedPlayerStyle.bind(this);
         this.saveTeam = this.saveTeam.bind(this);
+        this.getSquad1PlayerCount = this.getSquad1PlayerCount.bind(this);
+        this.getSquad2PlayerCount = this.getSquad2PlayerCount.bind(this);
+        this.selectCaptain = this.selectCaptain.bind(this);
+        this.selectViceCaptain = this.selectViceCaptain.bind(this);
     }
 
     componentDidMount() {
+        TeamSelectService.getUserAccountMatchTeam(this.state.match._id, this.props.userSettings.selectedUserAccount)
+            .then((response) => {
+                let players = []
+                if (response.data.players != undefined) {
+                    response.data.players.forEach((player) => {
+                        players.push(player._id);
+                    })
+                }
+
+                const squad1Count = this.getSquad1PlayerCount(players);
+                const squad2Count = this.getSquad2PlayerCount(players);
+
+                this.setState({
+                    selectedPlayers: players,
+                    selectedPlayerId: response.data._id || '',
+                    squad1Count: squad1Count,
+                    squad2Count: squad2Count,
+                    captain: response.data.captain || undefined,
+                    viceCaptain: response.data.viceCaptain || undefined
+                })
+            }).catch(err => {
+                ErrorUtils.handleError(err);
+            });
+    }
+
+    getSquad1PlayerCount(players) {
+        let count = 0;
+        players.forEach((player) => {
+            const arr = this.state.match.squad1.players.filter(e => e.player._id == player);
+            if (arr.length > 0) {
+                count++;
+            }
+        })
+        return count;
+    }
+
+    getSquad2PlayerCount(players) {
+        let count = 0;
+        players.forEach((player) => {
+            const arr = this.state.match.squad2.players.filter(e => e.player._id == player);
+            if (arr.length > 0) {
+                count++;
+            }
+        })
+        return count;
     }
 
     _renderMatchHeader() {
+        const now = moment().utc(false);
+        const startDate = moment(this.state.match.matchStartDate);
         return (
             <CardItem header bordered>
                 <View style={{ flex: 1, alignSelf: "center" }}>
                     <Text style={styles.match}>{this.state.match.name || ''}</Text>
                     <Text style={styles.series}>{this.state.match.series.name || ''}</Text>
+                    {now.isBefore(startDate) ?
+                        <Text style={{ fontSize: 10, color: Colors.border }}>{'match starts in ' + now.to(startDate)}</Text>
+                        : null}
+                </View>
+            </CardItem>
+        )
+    }
+
+    _renderLiveScore(score) {
+        return (
+            <CardItem header bordered>
+                <View style={{ flex: 1, alignSelf: "center" }}>
+                    <Text>{score.team0}</Text>
+                    <Text>{score.score0}</Text>
+                    <Text>{score.team1}</Text>
+                    <Text>{score.score1}</Text>
                 </View>
             </CardItem>
         )
@@ -62,23 +142,107 @@ class TeamSelectScreen extends Component {
         )
     }
 
-    onPlayerClick(player) {
+    onPlayerClick(player, squad) {
         const isSelected = this.state.selectedPlayers.includes(player.player._id);
         if (isSelected) {
+            if (this.state.captain == player.player._id) {
+                this.setState({
+                    captainSquad: undefined,
+                    captain: undefined
+                })
+            }
+            if (this.state.viceCaptain == player.player._id) {
+                this.setState({
+                    viceCaptainSquad: undefined,
+                    viceCaptain: undefined
+                })
+            }
             const selectedArr = this.state.selectedPlayers.filter(e => e !== player.player._id);
             this.setState({
                 selectedPlayers: selectedArr,
+                squad1Count: squad == 'SQUAD1' ? this.state.squad1Count - 1 : this.state.squad1Count,
+                squad2Count: squad == 'SQUAD2' ? this.state.squad2Count - 1 : this.state.squad2Count
             })
         } else {
+            if (this.state.squad1Count == 7 && squad == 'SQUAD1') {
+                toastMessage('Can select max 7 players from a team', ToastConstants.DANGER);
+                return false;
+            }
+            if (this.state.squad2Count == 7 && squad == 'SQUAD2') {
+                toastMessage('Can select max 7 players from a team', ToastConstants.DANGER);
+                return false;
+            }
+            if (this.state.selectedPlayers.length == 11) {
+                toastMessage('Can select max 11 players only', ToastConstants.DANGER);
+                return false;
+            }
             let selectedArr = [...this.state.selectedPlayers];
             selectedArr.push(player.player._id)
             this.setState({
-                selectedPlayers: selectedArr
+                selectedPlayers: selectedArr,
+                squad1Count: squad == 'SQUAD1' ? this.state.squad1Count + 1 : this.state.squad1Count,
+                squad2Count: squad == 'SQUAD2' ? this.state.squad2Count + 1 : this.state.squad2Count
             })
         }
     }
 
-    _renderPlayers(players) {
+    selectCaptain(e, player, squad) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (this.state.captain == player.player._id) {
+            this.setState({
+                captainSquad: undefined,
+                captain: undefined
+            })
+        } else if (this.state.viceCaptain == player.player._id) {
+            this.setState({
+                captainSquad: squad,
+                captain: player.player._id,
+                viceCaptainSquad: undefined,
+                viceCaptain: undefined
+            })
+        } else {
+            if (this.state.viceCaptainSquad == squad) {
+                toastMessage('Cannot select Captain and Vice Captain from same team', ToastConstants.DANGER);
+                return false;
+            }
+            this.setState({
+                captainSquad: squad,
+                captain: player.player._id
+            })
+        }
+    }
+
+    selectViceCaptain(e, player, squad) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (this.state.viceCaptain == player.player._id) {
+            this.setState({
+                viceCaptainSquad: undefined,
+                viceCaptain: undefined
+            })
+        } else if (this.state.captain == player.player._id) {
+            this.setState({
+                viceCaptainSquad: squad,
+                viceCaptain: player.player._id,
+                captainSquad: undefined,
+                captain: undefined
+            })
+        } else {
+            if (this.state.captainSquad == squad) {
+                toastMessage('Cannot select Captain and Vice Captain from same team', ToastConstants.DANGER);
+                return false;
+            }
+            this.setState({
+                viceCaptainSquad: squad,
+                viceCaptain: player.player._id
+            })
+        }
+    }
+
+    _renderPlayers(players, squad) {
         let arr = [];
         players.forEach((player) => {
             const isSelected = this.state.selectedPlayers.includes(player.player._id)
@@ -86,11 +250,27 @@ class TeamSelectScreen extends Component {
                 <CardItem button
                     key={player.player._id}
                     style={{ flex: 1 }}
-                    onPress={() => { this.onPlayerClick(player) }}>
+                    onPress={() => { this.onPlayerClick(player, squad) }}>
                     <View style={this.selectedPlayerStyle(isSelected)}>
                         <Image source={require('../../assets/wtf.png')} style={styles.playerImage} />
-                        <Text style={styles.name}>{player.player.name || '<player name here>'}</Text>
-                        <Text style={styles.role}>{player.role || ''}</Text>
+                        <View style={{ flexGrow: 1, alignSelf: "flex-start" }}>
+                            <Text style={styles.name}>{player.player.name || '<player name here>'}</Text>
+                            <Text style={styles.role}>{player.role || ''}</Text>
+                        </View>
+                        {isSelected ?
+                            <Badge style={this.viceCaptainPlayerStyle(player.player._id == this.state.viceCaptain)}>
+                                <TouchableOpacity onPress={(e) => { this.selectViceCaptain(e, player, squad) }}>
+                                    <Text>vc</Text>
+                                </TouchableOpacity>
+                            </Badge>
+                            : null}
+                        {isSelected ?
+                            <Badge style={this.captainPlayerStyle(player.player._id == this.state.captain)}>
+                                <TouchableOpacity onPress={(e) => { this.selectCaptain(e, player, squad) }}>
+                                    <Text>c</Text>
+                                </TouchableOpacity>
+                            </Badge>
+                            : null}
                     </View>
                 </CardItem >
             )
@@ -100,7 +280,7 @@ class TeamSelectScreen extends Component {
         </Card>)
     }
 
-    _renderPlayersSection(players) {
+    _renderPlayersSection(players, squad) {
         if (players == undefined || players == null || players.length == 0) {
             return (
                 <CardItem bordered>
@@ -112,14 +292,38 @@ class TeamSelectScreen extends Component {
         } else {
             return (
                 <CardItem bordered>
-                    {this._renderPlayers(players)}
+                    {this._renderPlayers(players, squad)}
                 </CardItem>
             )
         }
     }
 
     saveTeam() {
-        console.log(this.state.selectedPlayers)
+        if (this.state.squad1Count + this.state.squad2Count < 11) {
+            toastMessage('Please select min 11 players', ToastConstants.DANGER);
+            return false;
+        }
+
+        if (this.state.captain == undefined || this.state.viceCaptain == undefined) {
+            toastMessage('Please select Captain and Vice Captain for the team', ToastConstants.DANGER);
+            return false;
+        }
+
+        TeamSelectService.saveUserAccountMatchTeam({
+            id: this.state.selectedPlayerId.toString(),
+            match: this.state.match._id,
+            userAccount: this.props.userSettings.selectedUserAccount,
+            players: this.state.selectedPlayers,
+            captain: this.state.captain,
+            viceCaptain: this.state.viceCaptain
+        }).then((response) => {
+            this.setState({
+                selectedPlayerId: response.data._id,
+            });
+            this.props.navigation.navigate('HomeScreen');
+        }).catch(err => {
+            ErrorUtils.handleError(err);
+        });
     }
 
     _renderSaveFooter() {
@@ -135,15 +339,27 @@ class TeamSelectScreen extends Component {
     }
 
     _renderContent() {
+        const now = moment().utc(false);
+        const startDate = moment(this.state.match.matchStartDate);
+        const isMatchStarted = startDate.isAfter(now);
+        // let score = this.props.liveMatches.filter(function (scoreObj) {
+        //     return scoreObj.match == this.state.match.name;
+        // })
+        // score = score[0] || {}
+
         return (
             <Card transparent>
                 {this._renderMatchHeader()}
+
+                {/* {isMatchStarted ? this._renderLiveScore(score) : null} */}
+
                 {this._renderTeamHeader(this.state.match.squad1.team, styles.team1)}
-                {this._renderPlayersSection(this.state.squad1Players)}
+                {this._renderPlayersSection(this.state.squad1Players, "SQUAD1")}
 
                 {this._renderTeamHeader(this.state.match.squad2.team, styles.team2)}
-                {this._renderPlayersSection(this.state.squad2Players)}
-                {this._renderSaveFooter()}
+                {this._renderPlayersSection(this.state.squad2Players, "SQUAD2")}
+
+                {isMatchStarted ? this._renderSaveFooter() : null}
             </Card>
         )
     }
@@ -171,6 +387,8 @@ class TeamSelectScreen extends Component {
                 alignItems: 'flex-start',
                 backgroundColor: Colors.selected,
                 color: Colors.danger,
+                padding: 5,
+                borderRadius: 100
             }
         } else {
             return {
@@ -178,6 +396,44 @@ class TeamSelectScreen extends Component {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'flex-start',
+                padding: 5,
+                borderRadius: 100
+            }
+        }
+    }
+
+    captainPlayerStyle = function (isCaptain) {
+        if (isCaptain == true) {
+            return {
+                margin: 5,
+                lineHeight: 10,
+                alignSelf: 'flex-end',
+                backgroundColor: Colors.primary
+            }
+        } else {
+            return {
+                margin: 5,
+                lineHeight: 10,
+                alignSelf: 'flex-end',
+                backgroundColor: Colors.border
+            }
+        }
+    }
+
+    viceCaptainPlayerStyle = function (isViceCaptain) {
+        if (isViceCaptain == true) {
+            return {
+                margin: 5,
+                lineHeight: 10,
+                alignSelf: 'flex-end',
+                backgroundColor: Colors.primary
+            }
+        } else {
+            return {
+                margin: 5,
+                lineHeight: 10,
+                alignSelf: 'flex-end',
+                backgroundColor: Colors.border
             }
         }
     }
@@ -221,33 +477,32 @@ const styles = StyleSheet.create({
         fontSize: 10,
         fontWeight: 'normal',
         color: Colors.secondary,
-        alignSelf: 'center',
+        alignSelf: 'flex-start',
         paddingRight: 2
     },
     selected: {
         color: Colors.primary
     },
     name: {
-        flexGrow: 1,
         alignSelf: "flex-start",
-        alignSelf: 'center',
     },
     playerImage: {
         height: 30,
         width: 30,
         alignSelf: 'center',
         paddingLeft: 2
-    }
+    },
 });
 
 TeamSelectScreen.navigationOptions = ({ navigation }) => getNavigationOptions('match', Colors.primary, 'white');
 
 const mapStateToProps = store => ({
-    userMatchTeams: store.userMatchTeamReducer.userMatchTeams
+    userMatchTeams: store.userMatchTeamReducer.userMatchTeams,
+    liveMatches: store.liveMatchesReducer.liveMatches,
+    userSettings: store.userReducer.userSetting,
 })
 
 const mapDispatchToProps = dispatch => ({
-    dispatchUserMatchTeam: (userMatchTeam) => dispatch(updateUserMatchTeam(userMatchTeam))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TeamSelectScreen);

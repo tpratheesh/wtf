@@ -14,7 +14,9 @@ export default function userMatchTeamReducer(state = initialState, action) {
 }
 
 function updateUserMatchTeams(userMatchTeam) {
-    console.log(userMatchTeams)
     console.log(userMatchTeam)
-    return userMatchTeams
+    let arr = this.state.userMatchTeams.filter(e => e.match !== match._id);
+    arr.push(userMatchTeam)
+    console.log(arr)
+    return arr
 }
