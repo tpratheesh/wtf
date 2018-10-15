@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import {
     StyleSheet,
+    Picker
 } from 'react-native';
 import * as Colors from '../../themes/colors';
 import { connect } from 'react-redux';
-import { Picker, } from "native-base";
+// import { Picker, } from "native-base";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as UserAccountsService from '../../services/UserAccountsService';
 import { updateUserSettings } from '../../actions/UserActions';
@@ -55,7 +56,8 @@ class UserAccountSelector extends Component {
     render() {
         if (this.props.userAccounts != undefined && this.props.userAccounts.length > 1) {
             return (<Picker style={styles.picker}
-                textStyle={{ color: Colors.border, fontSize: 14 }}
+                style={{ height: 50, width: 150 }}
+                itemStyle={{ color: Colors.border, fontSize: 14, textAlign: "right" }}
                 mode="dropdown"
                 iosHeader="select your account"
                 iosIcon={<Icon name="caret-down" color={Colors.border} />}
