@@ -12,6 +12,7 @@ const styles = StyleSheet.create({
 export const getNavigationOptions = (title, backgroundColor, color) => ({
   title,
   headerTitle: title,
+  headerTransparent: true,
   headerStyle: {
     backgroundColor,
   },
@@ -19,7 +20,8 @@ export const getNavigationOptions = (title, backgroundColor, color) => ({
     color,
   },
   headerTintColor: color,
-  headerLeft: null
+  headerLeft: null,
+  headerRight: null
 });
 
 export const getNavigationOptionsWithAction = (title, backgroundColor, color, headerLeft, headerRight) => ({

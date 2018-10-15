@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { StyleSheet, Image } from 'react-native';
+import { StyleSheet, Image, ImageBackground } from 'react-native';
 import { connect } from 'react-redux';
 import { updateUser, updateUserToken } from '../actions/UserActions';
 import * as Colors from '../themes/colors';
@@ -94,58 +94,49 @@ class LoginScreen extends Component {
 
   render() {
     return (
-      <Container style={styles.container}>
+      <ImageBackground source={require('../../assets/stadium/1.jpg')} style={styles.backgroundImage}>
         <OfflineNotice />
-        <Content>
-          <Image source={require('../../assets/wtf.png')} style={{
-            margin: 25,
-            marginTop: 35,
-            height: 150,
-            width: 150,
-            alignSelf: 'center'
-          }} />
-          <Form>
-            <Item floatingLabel>
-              <Label>mobile no</Label>
-              <Input name="mobileNo" keyboardType="phone-pad" value={this.state.mobileNo} onChangeText={(text) => this.setState({ mobileNo: text })} />
-            </Item>
-            <View style={styles.button}>
-              <AnimateLoadingButton
-                ref={c => (this.loadingButton = c)}
-                style={styles.button}
-                onPress={() => this.generateOTP(this.state.mobileNo)}
-                width={200}
-                height={50}
-                title="generate otp"
-                titleFontSize={16}
-                titleColor="white"
-                backgroundColor={Colors.primary}
-                borderRadius={10}
-              >
-              </AnimateLoadingButton>
-            </View>
-            <Item floatingLabel>
-              <Label>otp</Label>
-              <Input name="otp" keyboardType="numeric" value={this.state.otp} onChangeText={(text) => this.setState({ otp: text })} />
-            </Item>
-            <View style={styles.button}>
-              <AnimateLoadingButton
-                ref={c => (this.loginLoadingButton = c)}
-                style={styles.button}
-                onPress={() => this.login(this.state.mobileNo, this.state.otp)}
-                width={200}
-                height={50}
-                title="login"
-                titleFontSize={16}
-                titleColor="white"
-                backgroundColor={Colors.primary}
-                borderRadius={10}
-              >
-              </AnimateLoadingButton>
-            </View>
-          </Form>
-        </Content >
-      </Container >
+        <Form>
+          <Item floatingLabel>
+            <Label style={{ color: Colors.white, fontSize: 16, fontWeight: "bold" }}>mobile no</Label>
+            <Input name="mobileNo" placeholderTextColor={Colors.white} keyboardType="phone-pad" style={styles.input} value={this.state.mobileNo} onChangeText={(text) => this.setState({ mobileNo: text })} />
+          </Item>
+          <View style={styles.button}>
+            <AnimateLoadingButton
+              ref={c => (this.loadingButton = c)}
+              style={styles.button}
+              onPress={() => this.generateOTP(this.state.mobileNo)}
+              width={200}
+              height={50}
+              title="generate otp"
+              titleFontSize={16}
+              titleColor="white"
+              backgroundColor={Colors.primary}
+              borderRadius={10}
+            >
+            </AnimateLoadingButton>
+          </View>
+          <Item floatingLabel>
+            <Label style={{ color: Colors.white, fontSize: 16, fontWeight: "bold" }}>otp</Label>
+            <Input name="otp" placeholderTextColor={Colors.white} keyboardType="numeric" style={styles.input} value={this.state.otp} onChangeText={(text) => this.setState({ otp: text })} />
+          </Item>
+          <View style={styles.button}>
+            <AnimateLoadingButton
+              ref={c => (this.loginLoadingButton = c)}
+              style={styles.button}
+              onPress={() => this.login(this.state.mobileNo, this.state.otp)}
+              width={200}
+              height={50}
+              title="login"
+              titleFontSize={16}
+              titleColor="white"
+              backgroundColor={Colors.primary}
+              borderRadius={10}
+            >
+            </AnimateLoadingButton>
+          </View>
+        </Form>
+      </ImageBackground>
     );
   }
 }
@@ -161,11 +152,24 @@ const styles = StyleSheet.create({
     height: 25
   },
   container: {
-    padding: 10,
+    flex: 1,
+    padding: 0,
+  },
+  backgroundImage: {
+    width: null,
+    height: null,
+    flex: 1,
+    justifyContent: 'center',
+    resizeMode: 'cover',
+  },
+  input: {
+    color: Colors.white,
+    fontSize: 20,
+    fontWeight: "bold"
   }
 });
 
-LoginScreen.navigationOptions = ({ navigation }) => getNavigationOptions('wtf', Colors.primary, Colors.primaryFont);
+LoginScreen.navigationOptions = ({ navigation }) => getNavigationOptions('3rd', Colors.transparent, Colors.primaryFont);
 
 const mapStateToProps = store => ({
   user: store.userReducer.user,

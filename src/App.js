@@ -29,9 +29,6 @@ const stackNavigator = token => createStackNavigator({
 }, {
     initialRouteName: token == undefined ? 'LoginScreen' : 'HomeScreen',
     navigationOptions: () => ({
-      headerStyle: {
-        backgroundColor: Colors.primary,
-      },
       headerTintColor: Colors.primaryFont,
       headerTitleStyle: {
         fontWeight: 'bold',
