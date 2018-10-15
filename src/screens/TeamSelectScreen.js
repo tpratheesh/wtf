@@ -107,7 +107,7 @@ class TeamSelectScreen extends Component {
         const now = moment().utc(false);
         const startDate = moment(this.state.match.matchStartDate);
         return (
-            <CardItem header bordered>
+            <CardItem header>
                 <View style={{ flex: 1, alignSelf: "center" }}>
                     <Text style={styles.match}>{this.state.match.name || ''}</Text>
                     <Text style={styles.series}>{this.state.match.series.name || ''}</Text>
@@ -134,7 +134,7 @@ class TeamSelectScreen extends Component {
 
     _renderTeamHeader(team, teamStyle) {
         return (
-            <CardItem header bordered>
+            <CardItem header>
                 <View style={{ flex: 1, alignSelf: "center" }}>
                     <Text style={teamStyle}>{team.name || ''} {'(' + team.shortName + ')'}</Text>
                 </View>
@@ -260,14 +260,14 @@ class TeamSelectScreen extends Component {
                         {isSelected ?
                             <Badge style={this.viceCaptainPlayerStyle(player.player._id == this.state.viceCaptain)}>
                                 <TouchableOpacity onPress={(e) => { this.selectViceCaptain(e, player, squad) }}>
-                                    <Text>vc</Text>
+                                    <Text> vc </Text>
                                 </TouchableOpacity>
                             </Badge>
                             : null}
                         {isSelected ?
                             <Badge style={this.captainPlayerStyle(player.player._id == this.state.captain)}>
                                 <TouchableOpacity onPress={(e) => { this.selectCaptain(e, player, squad) }}>
-                                    <Text>c</Text>
+                                    <Text> c </Text>
                                 </TouchableOpacity>
                             </Badge>
                             : null}
@@ -283,17 +283,17 @@ class TeamSelectScreen extends Component {
     _renderPlayersSection(players, squad) {
         if (players == undefined || players == null || players.length == 0) {
             return (
-                <CardItem bordered>
+                <View>
                     <Body>
                         <Text>Squad not announced</Text>
                     </Body>
-                </CardItem >
+                </View>
             )
         } else {
             return (
-                <CardItem bordered>
+                <View>
                     {this._renderPlayers(players, squad)}
-                </CardItem>
+                </View>
             )
         }
     }
@@ -328,7 +328,7 @@ class TeamSelectScreen extends Component {
 
     _renderSaveFooter() {
         return (
-            <CardItem footer bordered>
+            <CardItem footer>
                 <View style={{ flex: 1, alignSelf: "center" }}>
                     <Button full onPress={() => { this.saveTeam() }}>
                         <Text>save team</Text>
@@ -341,25 +341,26 @@ class TeamSelectScreen extends Component {
     _renderContent() {
         const now = moment().utc(false);
         const startDate = moment(this.state.match.matchStartDate);
-        const isMatchStarted = startDate.isAfter(now);
-        // let score = this.props.liveMatches.filter(function (scoreObj) {
-        //     return scoreObj.match == this.state.match.name;
-        // })
-        // score = score[0] || {}
+        const isMatchStarted = now.isAfter(startDate);
 
         return (
             <Card transparent>
                 {this._renderMatchHeader()}
-
-                {/* {isMatchStarted ? this._renderLiveScore(score) : null} */}
 
                 {this._renderTeamHeader(this.state.match.squad1.team, styles.team1)}
                 {this._renderPlayersSection(this.state.squad1Players, "SQUAD1")}
 
                 {this._renderTeamHeader(this.state.match.squad2.team, styles.team2)}
                 {this._renderPlayersSection(this.state.squad2Players, "SQUAD2")}
-
-                {isMatchStarted ? this._renderSaveFooter() : null}
+                {this.state.squad1Players == undefined ||
+                    this.state.squad1Players == null ||
+                    this.state.squad1Players.length == 0 ||
+                    this.state.squad2Players == undefined ||
+                    this.state.squad2Players == null ||
+                    this.state.squad2Players.length == 0 ||
+                    isMatchStarted ? null :
+                    this._renderSaveFooter()
+                }
             </Card>
         )
     }
