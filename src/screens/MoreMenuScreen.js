@@ -63,7 +63,7 @@ const styles = StyleSheet.create({
     }
 });
 
-MoreMenuScreen.navigationOptions = ({ navigation }) => getNavigationOptionsWithAction('more', Colors.primary, 'white', null, null);
+MoreMenuScreen.navigationOptions = ({ navigation }) => getNavigationOptionsWithAction('more', Colors.primary, Colors.primaryFont, null, null);
 
 const mapStateToProps = store => ({
     token: store.userReducer.token

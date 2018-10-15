@@ -125,7 +125,7 @@ const styles = StyleSheet.create({
     },
 });
 
-LiveScoreScreen.navigationOptions = ({ navigation }) => getNavigationOptions('match', Colors.primary, 'white');
+LiveScoreScreen.navigationOptions = ({ navigation }) => getNavigationOptions('match', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
     liveMatches: store.liveMatchesReducer.liveMatches,

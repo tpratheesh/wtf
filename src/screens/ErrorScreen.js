@@ -39,7 +39,7 @@ class ErrorScreen extends Component {
     }
 }
 
-ErrorScreen.navigationOptions = ({ navigation }) => getNavigationOptions('oops!', Colors.primary, 'white');
+ErrorScreen.navigationOptions = ({ navigation }) => getNavigationOptions('oops!', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
 })

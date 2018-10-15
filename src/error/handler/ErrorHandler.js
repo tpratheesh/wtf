@@ -37,7 +37,7 @@ class ErrorHandler extends Component {
     }
 }
 
-ErrorHandler.navigationOptions = ({ navigation }) => getNavigationOptions('me', Colors.primary, 'white');
+ErrorHandler.navigationOptions = ({ navigation }) => getNavigationOptions('me', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
 })

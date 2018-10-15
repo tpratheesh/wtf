@@ -152,7 +152,7 @@ class ProfileScreen extends Component {
     }
 }
 
-ProfileScreen.navigationOptions = ({ navigation }) => getNavigationOptions('me', Colors.primary, 'white');
+ProfileScreen.navigationOptions = ({ navigation }) => getNavigationOptions('me', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
     user: store.userReducer.user,

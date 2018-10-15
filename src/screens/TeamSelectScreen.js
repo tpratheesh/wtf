@@ -472,7 +472,7 @@ const styles = StyleSheet.create({
     },
 });
 
-TeamSelectScreen.navigationOptions = ({ navigation }) => getNavigationOptions('match', Colors.primary, 'white');
+TeamSelectScreen.navigationOptions = ({ navigation }) => getNavigationOptions('match', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
     userMatchTeams: store.userMatchTeamReducer.userMatchTeams,

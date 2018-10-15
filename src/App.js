@@ -32,7 +32,7 @@ const stackNavigator = token => createStackNavigator({
       headerStyle: {
         backgroundColor: Colors.primary,
       },
-      headerTintColor: 'white',
+      headerTintColor: Colors.primaryFont,
       headerTitleStyle: {
         fontWeight: 'bold',
       }

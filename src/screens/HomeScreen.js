@@ -130,7 +130,7 @@ const styles = StyleSheet.create({
     },
 });
 
-HomeScreen.navigationOptions = ({ navigation }) => getNavigationOptionsWithAction('home', Colors.primary, 'white', null, <UserAccountSelector />);
+HomeScreen.navigationOptions = ({ navigation }) => getNavigationOptionsWithAction('home', Colors.primary, Colors.primaryFont, null, <UserAccountSelector />);
 
 const mapStateToProps = store => ({
     user: store.userReducer.user,

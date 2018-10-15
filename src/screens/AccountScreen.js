@@ -63,7 +63,7 @@ class AccountScreen extends Component {
     }
 }
 
-AccountScreen.navigationOptions = ({ navigation }) => getNavigationOptions('stats', Colors.primary, 'white');
+AccountScreen.navigationOptions = ({ navigation }) => getNavigationOptions('stats', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
     user: store.userReducer.user,

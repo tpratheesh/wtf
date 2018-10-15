@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
 
 
 
-LiveMatchesScreen.navigationOptions = ({ navigation }) => getNavigationOptions('live matches', Colors.primary, 'white');
+LiveMatchesScreen.navigationOptions = ({ navigation }) => getNavigationOptions('live matches', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
     liveMatches: store.liveMatchesReducer.liveMatches,

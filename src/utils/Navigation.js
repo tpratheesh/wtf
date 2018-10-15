@@ -5,7 +5,7 @@ import * as Colors from '../themes/colors';
 
 const styles = StyleSheet.create({
   buttonText: {
-    color: 'white'
+    color: Colors.primaryFont
   }
 })
 
@@ -85,7 +85,7 @@ export const getDrawerConfig = (drawerPosition, initialRouteName) => ({
   drawerOpenRoute: 'DrawerOpen',
   drawerCloseRoute: 'DrawerClose',
   drawerToggleRoute: 'DrawerToggle',
-  drawerBackgroundColor: 'white',
+  drawerBackgroundColor: Colors.primaryFont,
   contentComponent: CustomDrawerContentComponent,
   contentOptions: {
     activeTintColor: Colors.secondary,

@@ -39,7 +39,7 @@ class FixturesScreen extends Component {
     }
 }
 
-FixturesScreen.navigationOptions = ({ navigation }) => getNavigationOptions('stats', Colors.primary, 'white');
+FixturesScreen.navigationOptions = ({ navigation }) => getNavigationOptions('stats', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
     user: store.userReducer.user,

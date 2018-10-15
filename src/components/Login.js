@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   }
 });
 
-LoginScreen.navigationOptions = ({ navigation }) => getNavigationOptions('wtf', Colors.primary, 'white');
+LoginScreen.navigationOptions = ({ navigation }) => getNavigationOptions('wtf', Colors.primary, Colors.primaryFont);
 
 const mapStateToProps = store => ({
   user: store.userReducer.user,
