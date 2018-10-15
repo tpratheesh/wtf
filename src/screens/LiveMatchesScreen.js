@@ -6,7 +6,7 @@ import {
 import * as Colors from '../themes/colors';
 import OfflineNotice from '../components/common/OfflineNotice';
 import { connect } from 'react-redux';
-import { Container, Content, List, ListItem, Body, Left, Right, Thumbnail, View, Text } from 'native-base';
+import { Container, Content, Text, Card, CardItem, View } from 'native-base';
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import { updateliveMatches } from '../actions/LiveMatchesAction';
@@ -19,6 +19,8 @@ class LiveMatchesScreen extends Component {
         this.state = {
             matches: this.props.liveMatches
         }
+
+        this._renderLiveMatches = this._renderLiveMatches.bind(this);
     }
 
     componentDidMount() {
@@ -51,28 +53,54 @@ class LiveMatchesScreen extends Component {
         }
     }
 
+    _renderLiveMatches(matches) {
+        let arr = [];
+        matches.forEach(match => {
+
+            let score = this.props.liveMatches.filter(function (scoreObj) {
+                return scoreObj.match == match.match;
+            })
+            score = score[0] || {}
+
+            arr.push(<Card key={match.match}>
+                <CardItem header button onPress={() => { this.props.navigation.navigate('LiveScoreScreen', { match: match.match }) }}>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.match}>{match.match}</Text>
+                        <Text style={styles.status}>{score.status || ''}</Text>
+                    </View>
+                </CardItem>
+                <CardItem style={styles.matchName} button onPress={() => { this.props.navigation.navigate('LiveScoreScreen', { match: match.match }) }}>
+                    <View style={{ flex: 1, alignContent: 'flex-start' }}>
+                        <View style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignContent: 'flex-start',
+                        }}>
+                            <Text style={styles.team1}>{match.team0}</Text>
+                            <Text style={styles.score}>{score.score0}</Text>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignContent: 'flex-start',
+                        }}>
+                            <Text style={styles.team2}>{match.team1}</Text>
+                            <Text style={styles.score}>{score.score1}</Text>
+                        </View>
+                    </View>
+                </CardItem>
+            </Card>);
+        });
+        return arr;
+    }
+
     render() {
         return (
             <Container>
                 <OfflineNotice />
                 <ScrollView style={styles.scroll}>
                     <Content>
-                        <List dataArray={this.state.matches}
-                            renderRow={(match) =>
-                                <ListItem onPress={() => {
-                                    this.props.navigation.navigate('LiveScoreScreen', { match: match.match })
-                                }}>
-                                    <Body>
-                                        <Text>
-                                            <Text style={styles.team1}>{match.team0}</Text>
-                                            <Text style={styles.small}> vs </Text>
-                                            <Text style={styles.team2}>{match.team1}</Text>
-                                        </Text>
-                                        <Text style={styles.match}>{match.match}</Text>
-                                    </Body>
-                                </ListItem>
-                            }>
-                        </List>
+                        {this._renderLiveMatches(this.state.matches)}
                     </Content>
                 </ScrollView>
                 <FooterComponent navigation={this.props.navigation} selected='live' />
@@ -82,27 +110,38 @@ class LiveMatchesScreen extends Component {
 }
 
 const styles = StyleSheet.create({
+    match: {
+        color: Colors.match,
+        fontSize: 12,
+    },
+    status: {
+        color: Colors.danger,
+        fontSize: 12,
+    },
+    small: {
+        fontSize: 10,
+        fontWeight: 'normal'
+    },
+    team: {
+        fontSize: 18,
+        color: Colors.border
+    },
+    matchName: {
+        alignSelf: "center"
+    },
     team1: {
         color: Colors.team1,
-        fontSize: 12,
-        fontWeight: 'bold',
+        fontSize: 16,
     },
     team2: {
         color: Colors.team2,
-        fontSize: 12,
-        fontWeight: 'bold',
-    },
-    match: {
-        color: Colors.match,
-        fontSize: 8,
-    },
-    small: {
-        fontSize: 8,
-        paddingRight: 25,
-        paddingLeft: 25
+        fontSize: 16,
     },
     scroll: {
         backgroundColor: Colors.white,
+    },
+    score: {
+        fontSize: 12,
     }
 });
 
