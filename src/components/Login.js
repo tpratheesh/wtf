@@ -94,7 +94,7 @@ class LoginScreen extends Component {
 
   render() {
     return (
-      <Container>
+      <Container style={styles.container}>
         <OfflineNotice />
         <Content>
           <Image source={require('../../assets/wtf.png')} style={{
@@ -159,6 +159,9 @@ const styles = StyleSheet.create({
   footer: {
     backgroundColor: Colors.secondary,
     height: 25
+  },
+  container: {
+    padding: 10,
   }
 });
 

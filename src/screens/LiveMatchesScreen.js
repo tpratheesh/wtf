@@ -21,6 +21,7 @@ class LiveMatchesScreen extends Component {
         }
 
         this._renderLiveMatches = this._renderLiveMatches.bind(this);
+        this._renderNoneMatches = this._renderNoneMatches.bind(this);
     }
 
     componentDidMount() {
@@ -51,6 +52,18 @@ class LiveMatchesScreen extends Component {
         if (this.socket.connected) {
             this.socket.close();
         }
+    }
+
+    _renderNoneMatches() {
+        return (
+            <Card>
+                <CardItem header>
+                    <View style={{ flex: 1 }}>
+                        <Text style={{ textAlign: "center" }}>No Live Matches!</Text>
+                    </View>
+                </CardItem>
+            </Card>
+        )
     }
 
     _renderLiveMatches(matches) {
@@ -100,7 +113,11 @@ class LiveMatchesScreen extends Component {
                 <OfflineNotice />
                 <ScrollView style={styles.scroll}>
                     <Content>
-                        {this._renderLiveMatches(this.state.matches)}
+                        {this.state.matches.length > 0 ?
+                            this._renderLiveMatches(this.state.matches)
+                            :
+                            this._renderNoneMatches()
+                        }
                     </Content>
                 </ScrollView>
                 <FooterComponent navigation={this.props.navigation} selected='live' />
@@ -117,6 +134,7 @@ const styles = StyleSheet.create({
     status: {
         color: Colors.danger,
         fontSize: 12,
+        alignSelf: "flex-end"
     },
     small: {
         fontSize: 10,

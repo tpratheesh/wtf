@@ -16,6 +16,7 @@ import ToastConstants from '../constants/ToastConstants';
 import * as TeamSelectService from '../services/TeamSelectService';
 import * as ErrorUtils from '../utils/ErrorUtils';
 import moment from 'moment';
+import MatchHeader from '../components/common/MatchHeader';
 
 class TeamSelectScreen extends Component {
     constructor(props) {
@@ -41,7 +42,6 @@ class TeamSelectScreen extends Component {
         }
         this._renderContent = this._renderContent.bind(this);
         this._renderMatchHeader = this._renderMatchHeader.bind(this);
-        this._renderLiveScore = this._renderLiveScore.bind(this);
         this._renderTeamHeader = this._renderTeamHeader.bind(this);
         this.__renderPlayersSection = this._renderPlayersSection.bind(this);
         this._renderPlayers = this._renderPlayers.bind(this);
@@ -104,31 +104,8 @@ class TeamSelectScreen extends Component {
     }
 
     _renderMatchHeader() {
-        const now = moment().utc(false);
-        const startDate = moment(this.state.match.matchStartDate);
         return (
-            <CardItem header>
-                <View style={{ flex: 1, alignSelf: "center" }}>
-                    <Text style={styles.match}>{this.state.match.name || ''}</Text>
-                    <Text style={styles.series}>{this.state.match.series.name || ''}</Text>
-                    {now.isBefore(startDate) ?
-                        <Text style={{ fontSize: 10, color: Colors.border }}>{'match starts in ' + now.to(startDate)}</Text>
-                        : null}
-                </View>
-            </CardItem>
-        )
-    }
-
-    _renderLiveScore(score) {
-        return (
-            <CardItem header bordered>
-                <View style={{ flex: 1, alignSelf: "center" }}>
-                    <Text>{score.team0}</Text>
-                    <Text>{score.score0}</Text>
-                    <Text>{score.team1}</Text>
-                    <Text>{score.score1}</Text>
-                </View>
-            </CardItem>
+            <MatchHeader match={this.state.match} />
         )
     }
 

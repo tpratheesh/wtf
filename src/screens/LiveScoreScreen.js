@@ -6,73 +6,132 @@ import {
 import * as Colors from '../themes/colors';
 import OfflineNotice from '../components/common/OfflineNotice';
 import { connect } from 'react-redux';
-import { Container, Content, Text } from 'native-base';
+import { Container, Content, Text, Card, CardItem, View } from 'native-base';
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
-import { updateliveMatches } from '../actions/LiveMatchesAction';
+import * as MatchesService from '../services/MatchesService';
+import MatchHeader from '../components/common/MatchHeader';
+import * as ErrorUtils from '../utils/ErrorUtils';
 
 class LiveScoreScreen extends Component {
     constructor(props) {
         super(props)
+
+        this.state = {
+            match: undefined
+        }
+
+        this._renderLiveScore = this._renderLiveScore.bind(this);
     }
 
     componentDidMount() {
-
+        const match = this.props.navigation.getParam('match', undefined);
+        MatchesService.getMatchByName(match)
+            .then((response) => {
+                this.setState({
+                    match: response.data
+                })
+            }).catch(err => {
+                ErrorUtils.handleError(err);
+            });
     }
 
     componentWillUnmount() {
-
     }
 
-    render() {
-        let match = this.props.navigation.getParam('match', undefined)
+    _renderLiveScore() {
+        const match = this.props.navigation.getParam('match', undefined);
+
         let score = this.props.liveMatches.filter(function (scoreObj) {
             return scoreObj.match == match;
         })
         score = score[0] || {}
+        return (
+            <Card transparent style={{ padding: 0 }}>
+                <CardItem>
+                    <View style={{ flex: 1 }}>
+                        <Text style={styles.status}>{score.status || ''}</Text>
+                    </View>
+                </CardItem>
+                <CardItem style={styles.matchName}>
+                    <View style={{ flex: 1, alignContent: 'flex-start' }}>
+                        <View style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignContent: 'flex-start',
+                        }}>
+                            <Text style={styles.team1}>{score.team0}</Text>
+                            <Text style={styles.score}>{score.score0}</Text>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row',
+                            justifyContent: 'space-between',
+                            alignContent: 'flex-start',
+                        }}>
+                            <Text style={styles.team2}>{score.team1}</Text>
+                            <Text style={styles.score}>{score.score1}</Text>
+                        </View>
+                    </View>
+                </CardItem>
+            </Card>
+        )
+    }
 
-        if (match == undefined) {
-            return (<Text>oops! cool, u found that bug! wen u read this message, lemme know :D</Text>)
-        } else {
-            return (
-                <Container style={styles.container}>
-                    <OfflineNotice />
-                    <ScrollView style={styles.scroll}>
-                        <Content>
-                            <Text>{match}</Text>
-                            <Text>{score.team0}</Text>
-                            <Text>{score.score0}</Text>
-                            <Text>{score.team1}</Text>
-                            <Text>{score.score1}</Text>
-                        </Content>
-                    </ScrollView>
-                    <FooterComponent navigation={this.props.navigation} selected='score' />
-                </Container >
-            );
-        }
+    render() {
+        console.log(this.state.match)
+        return (
+            <Container style={styles.container}>
+                <OfflineNotice />
+                <ScrollView style={styles.scroll}>
+                    <Content>
+                        <Card transparent>
+                            {this.state.match ? <MatchHeader match={this.state.match} /> : null}
+
+                            {this.state.match ? this._renderLiveScore() : null}
+                        </Card>
+                    </Content>
+                </ScrollView>
+                <FooterComponent navigation={this.props.navigation} selected='score' />
+            </Container >
+        );
     }
 }
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
+        padding: 0
     },
     scroll: {
         backgroundColor: Colors.white,
-    }
+    },
+    matchName: {
+        alignSelf: "center"
+    },
+    team1: {
+        color: Colors.team1,
+        fontSize: 16,
+    },
+    team2: {
+        color: Colors.team2,
+        fontSize: 16,
+    },
+    score: {
+        fontSize: 12,
+    },
+    status: {
+        color: Colors.danger,
+        fontSize: 12,
+        alignSelf: "flex-end"
+    },
 });
 
 LiveScoreScreen.navigationOptions = ({ navigation }) => getNavigationOptions('match', Colors.primary, 'white');
 
 const mapStateToProps = store => ({
     liveMatches: store.liveMatchesReducer.liveMatches,
-    token: store.userReducer.token
 })
 
 const mapDispatchToProps = dispatch => ({
-    dispatchUpdateliveMatches: (matches) => dispatch(updateliveMatches(matches)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(LiveScoreScreen);
