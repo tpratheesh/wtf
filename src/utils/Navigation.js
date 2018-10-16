@@ -9,10 +9,24 @@ const styles = StyleSheet.create({
   }
 })
 
-export const getNavigationOptions = (title, backgroundColor, color) => ({
+export const getLoginNavigationOptions = (title, backgroundColor, color) => ({
   title,
   headerTitle: title,
   headerTransparent: true,
+  headerStyle: {
+    backgroundColor,
+  },
+  headerTitleStyle: {
+    color,
+  },
+  headerTintColor: color,
+  headerLeft: null,
+  headerRight: null
+});
+
+export const getNavigationOptions = (title, backgroundColor, color) => ({
+  title,
+  headerTitle: title,
   headerStyle: {
     backgroundColor,
   },

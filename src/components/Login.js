@@ -3,7 +3,7 @@ import { StyleSheet, Image, ImageBackground } from 'react-native';
 import { connect } from 'react-redux';
 import { updateUser, updateUserToken } from '../actions/UserActions';
 import * as Colors from '../themes/colors';
-import { getNavigationOptions } from '../utils/Navigation';
+import { getLoginNavigationOptions } from '../utils/Navigation';
 import {
   Container,
   Content,
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
   }
 });
 
-LoginScreen.navigationOptions = ({ navigation }) => getNavigationOptions('3rd', Colors.transparent, Colors.primaryFont);
+LoginScreen.navigationOptions = ({ navigation }) => getLoginNavigationOptions('3rd', Colors.transparent, Colors.primaryFont);
 
 const mapStateToProps = store => ({
   user: store.userReducer.user,

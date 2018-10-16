@@ -34,14 +34,12 @@ class HomeScreen extends Component {
     }
 
     _refresh() {
-        if (this.props.userAccounts == undefined || this.props.userAccounts.length == 0) {
-            UserAccountsService.getUserAccounts()
-                .then((response) => {
-                    this.props.dispatchUpdateUserAccounts(response.data)
-                }).catch(err => {
-                    ErrorUtils.handleError(err);
-                });
-        }
+        UserAccountsService.getUserAccounts()
+            .then((response) => {
+                this.props.dispatchUpdateUserAccounts(response.data)
+            }).catch(err => {
+                ErrorUtils.handleError(err);
+            });
         MatchesService.getUpcomingMatches()
             .then((response) => {
                 this.props.dispatchUpcomingMatches(response.data);

@@ -5,7 +5,6 @@ import {
 } from 'react-native';
 import * as Colors from '../../themes/colors';
 import { connect } from 'react-redux';
-// import { Picker, } from "native-base";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import * as UserAccountsService from '../../services/UserAccountsService';
 import { updateUserSettings } from '../../actions/UserActions';
@@ -29,7 +28,6 @@ class UserAccountSelector extends Component {
                 this.setState({
                     selectedUserAccount: response.data.selectedUserAccount
                 })
-                console.log(response.data.selectedUserAccount)
                 this.props.dispatchUpdateUserSettings(response.data)
             }).catch(err => {
                 ErrorUtils.handleError(err);
