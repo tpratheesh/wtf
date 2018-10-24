@@ -10,7 +10,9 @@ import { Container, Content, Text, Card, CardItem, View } from 'native-base';
 import { getNavigationOptions } from '../utils/Navigation';
 import FooterComponent from "../components/common/Footer";
 import { updateliveMatches } from '../actions/LiveMatchesAction';
-import openSocket from 'socket.io-client';
+import * as LiveMatchesService from '../services/LiveMatchesService';
+import PTRView from 'react-native-pull-to-refresh';
+import * as ErrorUtils from '../utils/ErrorUtils';
 
 class LiveMatchesScreen extends Component {
     constructor(props) {
@@ -25,34 +27,32 @@ class LiveMatchesScreen extends Component {
     }
 
     componentDidMount() {
-        this.socket = openSocket('https://wtfappscore.herokuapp.com', { transports: ['websocket'] });
+        this._refresh();
 
-        this.socket.on('connect', () => {
-            console.log('connected');
-        });
+        if (!this.liveMatchInterval) {
+            this.liveMatchInterval = setInterval(() => {
+                this._refresh();
+            }, 20000)
+        }
 
-        this.socket.on('disconnect', () => {
-            console.log('disconnected');
-        });
-
-        this.socket.on('error', (e) => {
-            console.log('error', e);
-            if (this.socket.connected) {
-                this.socket.close();
-            }
-        });
-
-        this.socket.on('matches', (matches) => {
-            console.log('matches screen, updating')
-            this.props.dispatchUpdateliveMatches(matches);
-        });
     }
 
     componentWillUnmount() {
-        if (this.socket.connected) {
-            this.socket.close();
+        if (this.liveMatchInterval) {
+            clearInterval(this.liveMatchInterval)
         }
     }
+
+    _refresh() {
+        LiveMatchesService.getLiveMatches()
+            .then((response) => {
+                this.props.dispatchUpdateliveMatches(response.data)
+            }).catch(err => {
+                ErrorUtils.handleError(err);
+            });
+    }
+
+
 
     _renderNoneMatches() {
         return (
@@ -111,15 +111,17 @@ class LiveMatchesScreen extends Component {
         return (
             <Container>
                 <OfflineNotice />
-                <ScrollView style={styles.scroll}>
-                    <Content>
-                        {this.state.matches.length > 0 ?
-                            this._renderLiveMatches(this.state.matches)
-                            :
-                            this._renderNoneMatches()
-                        }
-                    </Content>
-                </ScrollView>
+                <PTRView colors={Colors.refresh} onRefresh={this._refresh}>
+                    <ScrollView style={styles.scroll}>
+                        <Content>
+                            {this.state.matches.length > 0 ?
+                                this._renderLiveMatches(this.state.matches)
+                                :
+                                this._renderNoneMatches()
+                            }
+                        </Content>
+                    </ScrollView>
+                </PTRView>
                 <FooterComponent navigation={this.props.navigation} selected='live' />
             </Container >
         );
