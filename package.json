@@ -14,7 +14,7 @@
     "native-base": "^2.8.0",
     "react": "16.3.1",
     "react-moment": "^0.7.9",
-    "react-native": "^0.57.1",
+    "react-native": "^0.70.4",
     "react-native-android-sms-listener": "^0.5.0",
     "react-native-animate-loading-button": "^1.0.3",
     "react-native-loading-spinner-overlay": "^0.5.2",
